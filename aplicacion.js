@@ -6,7 +6,7 @@ require('dotenv').config({ path: './datos.env' });
 
 // Importar las credenciales...
 const mysql = require("mysql");
-const dbConfig = require("./dbConfig"); // Asegúrate de que dbConfig.js esté actualizado con las variables de entorno
+const dbConfig = require("./dbConfig");
 
 // Crear el pool de conexiones
 const pool = mysql.createPool({
@@ -33,6 +33,7 @@ const materiasRouter = require("./routes/materias");
 const eventosRouter = require("./routes/eventos");
 const seccionesRouter = require("./routes/secciones");
 const calendarioRouter = require("./routes/calendario");
+const usuariosRouter = require("./routes/usuarios"); // Nueva línea para los usuarios
 
 // Indicar al sistema que estos son los enrutadores a utilizar
 app.use("/profesores", profesoresRouter);
@@ -40,6 +41,7 @@ app.use("/materias", materiasRouter);
 app.use("/eventos", eventosRouter);
 app.use("/secciones", seccionesRouter);
 app.use("/calendario", calendarioRouter);
+app.use("/usuarios", usuariosRouter); // Nueva línea para los usuarios
 
 // Para iniciar el servidor
 const puerto = 3000;

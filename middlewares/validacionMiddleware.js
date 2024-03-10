@@ -1,6 +1,6 @@
 const { body, validationResult } = require("express-validator");
 
-// Validar profesores (agregar)
+// Validar profesores
 const validarProfesor = [
   body("Nombre")
     .notEmpty()
@@ -14,7 +14,34 @@ const validarProfesor = [
   },
 ];
 
-// Validar secciones (agregar)
+// Validar secciones
+const validarMateria = [
+  body("Nombre")
+    .notEmpty()
+    .withMessage("El nombre de la materia es obligatorio."),
+  body("ID_Profesor")
+    .isNumeric()
+    .withMessage("El ID del profesor debe ser numérico."),
+  body("ID_Profesor")
+    .notEmpty()
+    .withMessage("El ID del profesor es obligatorio."),
+  body("ID_Seccion")
+    .isNumeric()
+    .withMessage("El ID de la sección debe ser numérico."),
+  body("ID_Seccion")
+    .notEmpty()
+    .withMessage("El ID de la sección es obligatorio."),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errores: errors.array() });
+    }
+    next();
+  },
+];
+
+// Validar secciones
 const validarSeccion = [
   body("Nombre")
     .notEmpty()
@@ -40,4 +67,4 @@ const validarSeccion = [
   },
 ];
 
-module.exports = { validarSeccion, validarProfesor };
+module.exports = { validarSeccion, validarProfesor, validarMateria };

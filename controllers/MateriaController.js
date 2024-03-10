@@ -2,6 +2,18 @@ const mysql = require("mysql");
 const dbConfig = require("../dbConfig");
 
 class MateriaController {
+  // Método para obtener todas las materias
+  static async listar(req, res) {
+    const sql = "SELECT * FROM materias";
+    try {
+      const materias = await dbQuery(sql);
+      res.json(materias);
+    } catch (error) {
+      console.error("Error al obtener materias:", error);
+      res.status(500).json({ error: "Error al obtener materias" });
+    }
+  }
+
   // Método para agregar una nueva materia
   static async agregar(req, res) {
     const { Nombre, ID_Profesor, ID_Seccion } = req.body;
@@ -14,18 +26,6 @@ class MateriaController {
     } catch (error) {
       console.error("Error al agregar materia:", error);
       res.status(500).json({ error: "Error al agregar materia" });
-    }
-  }
-
-  // Método para obtener todas las materias
-  static async listar(req, res) {
-    const sql = "SELECT * FROM materias";
-    try {
-      const materias = await dbQuery(sql);
-      res.json(materias);
-    } catch (error) {
-      console.error("Error al obtener materias:", error);
-      res.status(500).json({ error: "Error al obtener materias" });
     }
   }
 

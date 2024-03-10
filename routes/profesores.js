@@ -13,13 +13,14 @@ router.post(
   ProfesorController.agregar
 );
 
+// Se requiere ser profesor o director
 router.put(
   "/editar/:id",
   verificarTokenYRol(["Director", "Profesor"]),
   (req, res, next) => {
     // Añadir una propiedad al objeto req para indicar si es profesor
     if (req.usuario.rol === "Profesor") {
-      req.esProfesor = true; // Usaremos esta propiedad para decidir si mostramos el mensaje de advertencia
+      req.esProfesor = true; // Usamos esta propiedad para decidir si mostramos el mensaje de advertencia
     }
     next();
   },

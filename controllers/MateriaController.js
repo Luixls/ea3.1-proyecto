@@ -38,7 +38,11 @@ class MateriaController {
       "UPDATE materias SET Nombre = ?, ID_Profesor = ?, ID_Seccion = ? WHERE ID = ?";
     try {
       await dbQuery(sql, [Nombre, ID_Profesor, ID_Seccion, id]);
-      res.json({ mensaje: "Materia editada con éxito" });
+      // Personalizar el mensaje de éxito si el usuario es un profesor
+      const mensaje = req.esProfesor
+        ? "***ATENCIÓN, PROFESOR*** TENGA CUIDADO AL EDITAR LOS REGISTROS. POR FAVOR, DOBLE VERIFIQUE QUE LOS DATOS INTRODUCIDOS SON CORRECTOS. Los cambios han sido guardados."
+        : "Profesor editado con éxito";
+      res.json({ mensaje });
     } catch (error) {
       console.error("Error al editar materia:", error);
       res.status(500).json({ error: "Error al editar materia" });

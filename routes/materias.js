@@ -1,10 +1,37 @@
 const express = require("express");
 const router = express.Router();
 const MateriaController = require("../controllers/MateriaController");
+const { verificarTokenYRol } = require("../middlewares/authMiddleware");
 
+// No se requiere autenticación
 router.get("/listar", MateriaController.listar);
-router.post("/agregar", MateriaController.agregar);
-router.put("/editar/:id", MateriaController.editar);
-router.delete("/eliminar/:id", MateriaController.eliminar);
+
+// Se requiere ser profesor o director
+router.post(
+  "/agregar",
+  verificarTokenYRol(["Profesor", "Director"]),
+  MateriaController.agregar
+);
+
+// Se requiere ser profesor o director
+router.put(
+  "/editar/:id",
+  verificarTokenYRol(["Director", "Profesor"]),
+  (req, res, next) => {
+    // Añadir una propiedad al objeto req para indicar si es profesor
+    if (req.usuario.rol === "Profesor") {
+      req.esProfesor = true; // Usamos esta propiedad para decidir si mostramos el mensaje de advertencia
+    }
+    next();
+  },
+  MateriaController.editar
+);
+
+// Solo el director puede eliminar
+router.delete(
+  "/eliminar/:id",
+  verificarTokenYRol(["Director"]),
+  MateriaController.eliminar
+);
 
 module.exports = router;

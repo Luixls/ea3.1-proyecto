@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ProfesorController = require("../controllers/ProfesorController");
-const { verificarTokenYRol } = require("../middlewares/authMiddleware"); // Ajusta la ruta según sea necesario
+const { verificarTokenYRol } = require("../middlewares/authMiddleware");
 
 // No se requiere autenticación
 router.get("/listar", ProfesorController.listar);

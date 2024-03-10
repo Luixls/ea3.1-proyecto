@@ -14,7 +14,7 @@ const validarProfesor = [
   },
 ];
 
-// Validar secciones
+// Validar materias
 const validarMateria = [
   body("Nombre")
     .notEmpty()
@@ -67,4 +67,45 @@ const validarSeccion = [
   },
 ];
 
-module.exports = { validarSeccion, validarProfesor, validarMateria };
+// Validar agregar usuario
+const validarRegistroUsuario = [
+  body("nombreUsuario")
+    .notEmpty()
+    .withMessage("El nombre de usuario es obligatorio."),
+  body("contraseña").notEmpty().withMessage("La contraseña es obligatoria."),
+  body("rol")
+    .notEmpty()
+    .withMessage("El rol es obligatorio.")
+    .isIn(["Director", "Profesor"])
+    .withMessage("El rol debe ser 'Director' o 'Profesor'."),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errores: errors.array() });
+    }
+    next();
+  },
+];
+
+// Validar usuarios
+const validarUsuario = [
+  body("nombreUsuario")
+    .notEmpty()
+    .withMessage("El nombre de usuario es obligatorio."),
+  body("contraseña").notEmpty().withMessage("La contraseña es obligatoria."),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errores: errors.array() });
+    }
+    next();
+  },
+];
+
+module.exports = {
+  validarSeccion,
+  validarProfesor,
+  validarMateria,
+  validarRegistroUsuario,
+  validarUsuario,
+};

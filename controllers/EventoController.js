@@ -5,6 +5,7 @@ class EventoController {
   // Método para agregar un nuevo evento
   static async agregar(req, res) {
     const { Nombre, Fecha, ID_Materia } = req.body;
+    console.log(req.body); // Depurar entrada
     const sql =
       "INSERT INTO eventos (Nombre, Fecha, ID_Materia) VALUES (?, ?, ?)";
     try {
@@ -33,6 +34,7 @@ class EventoController {
   static async editar(req, res) {
     const { id } = req.params;
     const { Nombre, Fecha, ID_Materia } = req.body;
+    console.log(req.body); // Depurar entrada
     const sql =
       "UPDATE eventos SET Nombre = ?, Fecha = ?, ID_Materia = ? WHERE ID = ?";
     try {

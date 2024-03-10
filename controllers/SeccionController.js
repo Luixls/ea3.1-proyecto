@@ -5,7 +5,9 @@ class SeccionController {
   // Método para agregar una nueva sección
   static async agregar(req, res) {
     const { Nombre, ID_Materia, ID_Profesor } = req.body;
-    const sql = "INSERT INTO secciones (Nombre, ID_Materia, ID_Profesor) VALUES (?, ?, ?)";
+    console.log(req.body); // Depurar entrada
+    const sql =
+      "INSERT INTO secciones (Nombre, ID_Materia, ID_Profesor) VALUES (?, ?, ?)";
     try {
       await dbQuery(sql, [Nombre, ID_Materia, ID_Profesor]);
       res.json({ mensaje: "Sección agregada con éxito" });
@@ -16,7 +18,7 @@ class SeccionController {
   }
 
   // Método para obtener todas las secciones
-  
+
   static async listar(req, res) {
     const sql = "SELECT * FROM secciones";
     try {
@@ -33,7 +35,9 @@ class SeccionController {
   static async editar(req, res) {
     const { id } = req.params;
     const { Nombre, ID_Materia, ID_Profesor } = req.body;
-    const sql = "UPDATE secciones SET Nombre = ?, ID_Materia = ?, ID_Profesor = ? WHERE ID = ?";
+    console.log(req.body); // Depurar entrada
+    const sql =
+      "UPDATE secciones SET Nombre = ?, ID_Materia = ?, ID_Profesor = ? WHERE ID = ?";
     try {
       await dbQuery(sql, [Nombre, ID_Materia, ID_Profesor, id]);
       res.json({ mensaje: "Sección editada con éxito" });

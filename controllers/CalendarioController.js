@@ -37,6 +37,7 @@ class CalendarioController {
   // Función para agregar un nuevo trimestre
   static async agregar(req, res) {
     const { Nombre, Fecha_Inicio, Fecha_Final } = req.body;
+    console.log(req.body); // Depurar entrada
     try {
       await dbQuery(
         "INSERT INTO trimestres (Nombre, Fecha_Inicio, Fecha_Final) VALUES (?, ?, ?)",
@@ -53,6 +54,7 @@ class CalendarioController {
   static async editar(req, res) {
     const { id } = req.params;
     const { Nombre, Fecha_Inicio, Fecha_Final } = req.body;
+    console.log(req.body); // Depurar entrada
     try {
       await dbQuery(
         "UPDATE trimestres SET Nombre = ?, Fecha_Inicio = ?, Fecha_Final = ? WHERE ID = ?",

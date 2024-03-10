@@ -36,7 +36,12 @@ class ProfesorController {
     const sql = "UPDATE profesores SET Nombre = ? WHERE ID = ?";
     try {
       await dbQuery(sql, [nombre, id]);
-      res.json({ mensaje: "Profesor editado con éxito" });
+
+      // Personalizar el mensaje de éxito si el usuario es un profesor
+      const mensaje = req.esProfesor
+        ? "***ATENCIÓN, PROFESOR*** TENGA CUIDADO AL EDITAR LOS REGISTROS. POR FAVOR, DOBLE VERIFIQUE QUE LOS DATOS INTRODUCIDOS SON CORRECTOS. Los cambios han sido guardados."
+        : "Profesor editado con éxito";
+      res.json({ mensaje });
     } catch (error) {
       console.error("Error al editar profesor:", error);
       res.status(500).json({ error: "Error al editar profesor" });

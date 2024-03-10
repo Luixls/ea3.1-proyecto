@@ -9,8 +9,9 @@ class UsuarioController {
     const { nombreUsuario, contraseña, rol } = req.body;
     // Encriptación de las pass antes de guardarla en la BD
     const contraseñaEncriptada = await bcrypt.hash(contraseña, 10);
-    
-    const sql = "INSERT INTO usuarios (nombreUsuario, contraseña, rol) VALUES (?, ?, ?)";
+
+    const sql =
+      "INSERT INTO usuarios (nombreUsuario, contraseña, rol) VALUES (?, ?, ?)";
     try {
       await dbQuery(sql, [nombreUsuario, contraseñaEncriptada, rol]);
       res.json({ mensaje: "Usuario registrado con éxito" });
@@ -24,14 +25,18 @@ class UsuarioController {
   static async login(req, res) {
     const { nombreUsuario, contraseña } = req.body;
     const sql = "SELECT * FROM usuarios WHERE nombreUsuario = ?";
-    
+
     try {
       const usuarios = await dbQuery(sql, [nombreUsuario]);
       if (usuarios.length > 0) {
         const usuario = usuarios[0];
         if (await bcrypt.compare(contraseña, usuario.contraseña)) {
           // Generar JWT
-          const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET, { expiresIn: '8h' });
+          const token = jwt.sign(
+            { id: usuario.id, rol: usuario.rol },
+            process.env.JWT_SECRET,
+            { expiresIn: "8h" }
+          );
           res.json({ mensaje: "Inicio de sesión exitoso", token });
         } else {
           res.status(401).json({ error: "Contraseña incorrecta" });

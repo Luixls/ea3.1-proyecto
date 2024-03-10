@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const SeccionController = require("../controllers/SeccionController");
 const { verificarTokenYRol } = require("../middlewares/authMiddleware");
-const { validarAgregarSeccion, validarEditarSeccion } = require("../middlewares/validacionMiddleware");
+const { validarSeccion } = require("../middlewares/validacionMiddleware");
 
 // No se requiere autenticación
 router.get("/listar", SeccionController.listar);
@@ -10,7 +10,7 @@ router.get("/listar", SeccionController.listar);
 // Se requiere ser profesor o director
 router.post(
   "/agregar",
-  validarAgregarSeccion,
+  validarSeccion,
   verificarTokenYRol(["Profesor", "Director"]),
   SeccionController.agregar
 );
@@ -18,7 +18,7 @@ router.post(
 // Se requiere ser profesor o director
 router.put(
   "/editar/:id",
-  validarEditarSeccion,
+  validarSeccion,
   verificarTokenYRol(["Director", "Profesor"]),
   (req, res, next) => {
     if (req.usuario.rol === "Profesor") {

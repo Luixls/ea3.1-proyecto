@@ -17,7 +17,7 @@ const verificarTokenYRol = (rolesPermitidos) => {
       if (!rolesPermitidos.includes(decoded.rol)) {
         return res
           .status(401)
-          .json({ error: "No tiene permiso para realizar esta acción" });
+          .json({ error: "No tiene permiso para realizar esta acción - solo un usuario de mayor nivel puede continuar." });
       }
 
       next();

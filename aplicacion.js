@@ -2,22 +2,29 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 app.set("view engine", "ejs");
-require('dotenv').config();
+require('dotenv').config({ path: './datos.env' });
 
 // Importar las credenciales...
 const mysql = require("mysql");
-const dbConfig = require("./dbConfig"); // Ruta al archivo dbConfig.js
+const dbConfig = require("./dbConfig"); // Asegúrate de que dbConfig.js esté actualizado con las variables de entorno
 
-// Crear la conexión
-const connection = mysql.createConnection(dbConfig);
+// Crear el pool de conexiones
+const pool = mysql.createPool({
+  connectionLimit : 10, // Por ahora 10 conexiones, no importa mucho
+  host: dbConfig.host,
+  user: dbConfig.user,
+  password: dbConfig.password,
+  database: dbConfig.database
+});
 
-// Ejecutar la conexión
-connection.connect((err) => {
+// Comprobar conexión inicial
+pool.getConnection((err, connection) => {
   if (err) {
-    console.error("CONEXIÓN FALLIDA a la BD MySQL", err);
+    console.error("CONEXIÓN FALLIDA AL POOL, BD MySQL", err);
     return;
   }
-  console.log("CONEXIÓN A LA BD MYSQL EXITOSA");
+  console.log("CONEXIÓN AL POOL DE LA BD MYSQL EXITOSA");
+  connection.release(); // Devolver la conexión al pool
 });
 
 // Enrutadores
@@ -35,14 +42,5 @@ app.use("/secciones", seccionesRouter);
 app.use("/calendario", calendarioRouter);
 
 // Para iniciar el servidor
-puerto = 3000;
+const puerto = 3000;
 app.listen(puerto, () => console.log("Servidor corriendo en puerto", puerto));
-
-// Cerrar la conexión a la BD MySQL
-connection.end((err) => {
-  if (err) {
-    console.error("ERROR AL CERRAR LA CONEXIÓN", err);
-    return;
-  }
-  console.log("CONEXIÓN A LA BD MYSQL CERRADA CON ÉXITO (PRUEBA COMPLETADA)");
-});

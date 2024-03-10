@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 app.set("view engine", "ejs");
+require('dotenv').config();
 
 // Importar las credenciales...
 const mysql = require("mysql");

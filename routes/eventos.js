@@ -1,14 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const EventoController = require("../controllers/EventoController");
+const { verificarTokenYRol } = require("../middlewares/authMiddleware");
 
+// No se requiere autenticación
 router.get("/listar", EventoController.listar);
 router.get(
   "/profesor/:idProfesor/:fechaInicio",
   EventoController.eventosFuturosProfesor
 );
-router.post("/agregar", EventoController.agregar);
-router.put("/editar/:id", EventoController.editar);
-router.delete("/eliminar/:id", EventoController.eliminar);
+
+// Se requiere ser profesor o director
+router.post(
+  "/agregar",
+  verificarTokenYRol(["Profesor", "Director"]),
+  EventoController.agregar
+);
+
+// Se requiere ser profesor o director
+router.put(
+  "/editar/:id",
+  verificarTokenYRol(["Director", "Profesor"]),
+  (req, res, next) => {
+    // Añadir una propiedad al objeto req para indicar si es profesor
+    if (req.usuario.rol === "Profesor") {
+      req.esProfesor = true; // Usamos esta propiedad para decidir si mostramos el mensaje de advertencia
+    }
+    next();
+  },
+  EventoController.editar
+);
+
+// Solo el director puede eliminar
+router.delete(
+  "/eliminar/:id",
+  verificarTokenYRol(["Director"]),
+  EventoController.eliminar
+);
 
 module.exports = router;

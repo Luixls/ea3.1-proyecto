@@ -78,7 +78,11 @@ class EventoController {
       "UPDATE eventos SET Nombre = ?, Fecha = ?, ID_Materia = ? WHERE ID = ?";
     try {
       await dbQuery(sql, [Nombre, Fecha, ID_Materia, id]);
-      res.json({ mensaje: "Evento editado con éxito" });
+      // Personalizar el mensaje de éxito si el usuario es un profesor
+      const mensaje = req.esProfesor
+        ? "***ATENCIÓN, PROFESOR*** TENGA CUIDADO AL EDITAR LOS REGISTROS. POR FAVOR, DOBLE VERIFIQUE QUE LOS DATOS INTRODUCIDOS SON CORRECTOS. Los cambios han sido guardados."
+        : "Profesor editado con éxito";
+      res.json({ mensaje });
     } catch (error) {
       console.error("Error al editar evento:", error);
       res.status(500).json({ error: "Error al editar evento" });

@@ -4,10 +4,14 @@ const dbConfig = require("../dbConfig");
 class MateriaController {
   // Método para obtener todas las materias
   static async listar(req, res) {
-    const sql = "SELECT * FROM materias";
+    const sql = `
+      SELECT materias.ID, materias.Nombre, profesores.Nombre AS NombreProfesor, secciones.Nombre AS NombreSeccion 
+      FROM materias
+      JOIN profesores ON materias.ID_Profesor = profesores.ID
+      JOIN secciones ON materias.ID_Seccion = secciones.ID`;
     try {
       const materias = await dbQuery(sql);
-      res.json(materias);
+      res.render("listaMaterias", { materias });
     } catch (error) {
       console.error("Error al obtener materias:", error);
       res.status(500).json({ error: "Error al obtener materias" });

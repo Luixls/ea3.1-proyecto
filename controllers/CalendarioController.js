@@ -20,17 +20,18 @@ class CalendarioController {
     try {
       const trimestres = await dbQuery("SELECT * FROM trimestres");
 
-      // Formatear las fechas sin la hora
       const trimestresFormateados = trimestres.map((trimestre) => ({
         ...trimestre,
         Fecha_Inicio: format(new Date(trimestre.Fecha_Inicio), "yyyy-MM-dd"),
         Fecha_Final: format(new Date(trimestre.Fecha_Final), "yyyy-MM-dd"),
       }));
 
-      res.json(trimestresFormateados);
+      res.render("listaTrimestres", { trimestres: trimestresFormateados });
     } catch (error) {
       console.error("Error al listar los trimestres:", error);
-      res.status(500).json({ error: "Error al listar los trimestres" });
+      res
+        .status(500)
+        .render("error", { error: "Error al listar los trimestres" });
     }
   }
 

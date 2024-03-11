@@ -4,13 +4,17 @@ const dbConfig = require("../dbConfig");
 class SeccionController {
   // Método para obtener todas las secciones
   static async listar(req, res) {
-    const sql = "SELECT * FROM secciones";
+    const sql = `
+      SELECT secciones.ID, secciones.Nombre, materias.Nombre AS NombreMateria, profesores.Nombre AS NombreProfesor
+      FROM secciones
+      JOIN materias ON secciones.ID_Materia = materias.ID
+      JOIN profesores ON secciones.ID_Profesor = profesores.ID`;
     try {
       const secciones = await dbQuery(sql);
-      res.json(secciones);
+      res.render("listaSecciones", { secciones });
     } catch (error) {
       console.error("Error al obtener secciones:", error);
-      res.status(500).json({ error: "Error al obtener secciones" });
+      res.status(500).render("error", { error: "Error al obtener secciones" });
     }
   }
 

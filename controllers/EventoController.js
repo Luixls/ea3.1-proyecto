@@ -4,14 +4,17 @@ const dbConfig = require("../dbConfig");
 class EventoController {
   // Método para obtener todos los eventos
   static async listar(req, res) {
-    const sql =
-      "SELECT ID, Nombre, DATE_FORMAT(Fecha, '%Y-%m-%d') as Fecha, ID_Materia FROM eventos";
+    const sql = `
+      SELECT eventos.ID, eventos.Nombre, DATE_FORMAT(eventos.Fecha, '%Y-%m-%d') as Fecha, materias.Nombre AS NombreMateria, profesores.Nombre AS NombreProfesor
+      FROM eventos
+      JOIN materias ON eventos.ID_Materia = materias.ID
+      JOIN profesores ON materias.ID_Profesor = profesores.ID`;
     try {
       const eventos = await dbQuery(sql);
-      res.json(eventos);
+      res.render("listaEventos", { eventos });
     } catch (error) {
       console.error("Error al obtener eventos:", error);
-      res.status(500).json({ error: "Error al obtener eventos" });
+      res.status(500).render("error", { error: "Error al obtener eventos" });
     }
   }
 

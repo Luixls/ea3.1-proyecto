@@ -7,10 +7,10 @@ class ProfesorController {
     const sql = "SELECT * FROM profesores";
     try {
       const profesores = await dbQuery(sql);
-      res.json(profesores);
+      res.render("listaProfesores", { profesores });
     } catch (error) {
       console.error("Error al obtener profesores:", error);
-      res.status(500).json({ error: "Error al obtener profesores" });
+      res.status(500).render("error", { error: "Error al obtener profesores" });
     }
   }
 

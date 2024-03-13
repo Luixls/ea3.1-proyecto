@@ -99,14 +99,19 @@ class CalendarioController {
         semana
       );
 
-      // Consultar las actividades programadas en el rango de fechas
+      // Consultar las actividades programadas en el rango de fechas, incluyendo eventos globales
       const actividades = await dbQuery(
-        `SELECT e.ID, e.Nombre AS NombreEvento, e.Fecha, m.Nombre AS NombreMateria, p.Nombre AS NombreProfesor, s.Nombre AS NombreSeccion
-        FROM Eventos e
-        LEFT JOIN Materias m ON e.ID_Materia = m.ID
-        LEFT JOIN Profesores p ON m.ID_Profesor = p.ID
-        LEFT JOIN Secciones s ON m.ID_Seccion = s.ID
-        WHERE Fecha BETWEEN ? AND ?`,
+        `
+            SELECT e.ID, e.Nombre AS NombreEvento, e.Fecha, 
+                   IF(e.esglobal, 'Global', m.Nombre) AS NombreMateria,
+                   IF(e.esglobal, 'Todos', p.Nombre) AS NombreProfesor, 
+                   IF(e.esglobal, 'Todos', s.Nombre) AS NombreSeccion
+            FROM eventos e
+            LEFT JOIN materias m ON e.ID_Materia = m.ID AND e.esglobal = 0
+            LEFT JOIN profesores p ON m.ID_Profesor = p.ID
+            LEFT JOIN secciones s ON m.ID_Seccion = s.ID
+            WHERE e.Fecha BETWEEN ? AND ?
+            ORDER BY e.Fecha ASC`,
         [inicioSemana, finSemana]
       );
 
@@ -128,7 +133,6 @@ class CalendarioController {
 
       // Utilizar res.render para enviar los datos a la vista EJS
       res.render("actividadesSemana", {
-        // Asegúrate de que el nombre del archivo EJS coincida
         trimestre,
         semana,
         inicioSemana: inicioSemana.split(" ")[0], // Solo fecha sin nombre de día

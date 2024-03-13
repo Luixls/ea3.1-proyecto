@@ -5,10 +5,11 @@ class EventoController {
   // Método para obtener todos los eventos
   static async listar(req, res) {
     const sql = `
-      SELECT eventos.ID, eventos.Nombre, DATE_FORMAT(eventos.Fecha, '%Y-%m-%d') as Fecha, materias.Nombre AS NombreMateria, profesores.Nombre AS NombreProfesor
-      FROM eventos
-      JOIN materias ON eventos.ID_Materia = materias.ID
-      JOIN profesores ON materias.ID_Profesor = profesores.ID`;
+    SELECT eventos.ID, eventos.Nombre, DATE_FORMAT(eventos.Fecha, '%Y-%m-%d') as Fecha, IFNULL(materias.Nombre, 'Global') AS NombreMateria, IFNULL(profesores.Nombre, 'Todos') AS NombreProfesor
+    FROM eventos
+    LEFT JOIN materias ON eventos.ID_Materia = materias.ID
+    LEFT JOIN profesores ON materias.ID_Profesor = profesores.ID
+    OR eventos.esglobal = TRUE`;
     try {
       const eventos = await dbQuery(sql);
       res.render("listaEventos", { eventos });
@@ -23,27 +24,26 @@ class EventoController {
     const { idProfesor, fechaInicio } = req.params;
 
     const sql = `
-        SELECT e.ID, e.Nombre, DATE_FORMAT(e.Fecha, '%Y-%m-%d') as Fecha, e.ID_Materia, m.Nombre AS NombreMateria, p.Nombre AS NombreProfesor
-        FROM eventos e
-        INNER JOIN materias m ON e.ID_Materia = m.ID
-        INNER JOIN profesores p ON m.ID_Profesor = p.ID
-        WHERE p.ID = ? AND e.Fecha >= ?
-        ORDER BY e.Fecha ASC`;
+      SELECT e.ID, e.Nombre, DATE_FORMAT(e.Fecha, '%Y-%m-%d') as Fecha, e.ID_Materia, IFNULL(m.Nombre, 'Global') AS NombreMateria, IFNULL(p.Nombre, 'Todos') AS NombreProfesor
+      FROM eventos e
+      LEFT JOIN materias m ON e.ID_Materia = m.ID
+      LEFT JOIN profesores p ON m.ID_Profesor = p.ID
+      WHERE (p.ID = ? OR e.esglobal = TRUE) AND e.Fecha >= ?
+      ORDER BY e.Fecha ASC`;
 
     try {
       const eventos = await dbQuery(sql, [idProfesor, fechaInicio]);
       if (eventos.length > 0) {
-        // En lugar de enviar un JSON, renderizamos la vista EJS con los eventos
         res.render("eventosFuturosProfesor", {
           eventos: eventos,
           idProfesor: idProfesor,
           fechaInicio: fechaInicio,
-          nombreProfesor: eventos[0].NombreProfesor, // Asumimos que todos los eventos pertenecen al mismo profesor
+          nombreProfesor:
+            eventos.find((evento) => evento.NombreProfesor !== "Todos")
+              ?.NombreProfesor || "Global",
         });
       } else {
-        // Podrías también renderizar una vista EJS para el caso de no encontrar eventos, o simplemente enviar un mensaje como se hace aquí
         res.status(404).render("sinEventosFuturos", {
-          // Asegúrate de crear esta vista EJS para manejar el caso de no eventos
           mensaje:
             "No se encontraron eventos futuros para el profesor especificado desde la fecha indicada.",
         });
@@ -51,7 +51,6 @@ class EventoController {
     } catch (error) {
       console.error("Error al obtener eventos futuros del profesor:", error);
       res.status(500).render("error", {
-        // Asegúrate de tener una vista de error general
         error: "Error al obtener eventos futuros del profesor",
       });
     }
@@ -59,12 +58,12 @@ class EventoController {
 
   // Método para agregar un nuevo evento
   static async agregar(req, res) {
-    const { Nombre, Fecha, ID_Materia } = req.body;
+    const { Nombre, Fecha, ID_Materia, esglobal } = req.body;
     console.log(req.body); // Depurar entrada
     const sql =
-      "INSERT INTO eventos (Nombre, Fecha, ID_Materia) VALUES (?, ?, ?)";
+      "INSERT INTO eventos (Nombre, Fecha, ID_Materia, esglobal) VALUES (?, ?, ?, ?)";
     try {
-      await dbQuery(sql, [Nombre, Fecha, ID_Materia]);
+      await dbQuery(sql, [Nombre, Fecha, ID_Materia, esglobal || false]);
       res.json({ mensaje: "Evento agregado con éxito" });
     } catch (error) {
       console.error("Error al agregar evento:", error);

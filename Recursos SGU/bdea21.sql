@@ -250,4 +250,6 @@ CREATE TABLE usuarios (
   rol ENUM('Profesor', 'Director') NOT NULL
 );
 
+ALTER TABLE eventos ADD COLUMN esglobal BOOLEAN NOT NULL DEFAULT FALSE;
+
 FLUSH PRIVILEGES;

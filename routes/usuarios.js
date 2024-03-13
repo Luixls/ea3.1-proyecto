@@ -6,7 +6,6 @@ const {
   validarUsuario,
 } = require("../middlewares/validacionMiddleware");
 
-// Solo el director puede agregar usuarios
 router.post("/registro", validarRegistroUsuario, UsuarioController.registro);
 
 router.post("/login", validarUsuario, UsuarioController.login);

@@ -78,6 +78,26 @@ const validarEventos = [
   body("ID_Materia")
     .notEmpty()
     .withMessage("El ID de la materia es obligatorio."),
+  body("ID_Materia")
+    .isNumeric()
+    .withMessage("El ID de la materia debe ser numérico."),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errores: errors.array() });
+    }
+    next();
+  },
+];
+
+// Validar agregar eventos
+const validarAgregarEventos = [
+  body("Nombre").notEmpty().withMessage("El nombre del evento es obligatorio."),
+  body("Fecha")
+    .notEmpty()
+    .withMessage("La fecha es obligatoria.")
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage("La fecha debe estar en formato AAAA-MM-DD."),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -153,5 +173,6 @@ module.exports = {
   validarRegistroUsuario,
   validarUsuario,
   validarEventos,
+  validarAgregarEventos,
   validarTrimestres,
 };

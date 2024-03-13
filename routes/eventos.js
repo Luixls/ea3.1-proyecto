@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const EventoController = require("../controllers/EventoController");
 const { verificarTokenYRol } = require("../middlewares/authMiddleware");
-const { validarEventos } = require("../middlewares/validacionMiddleware");
+const { validarEventos, validarAgregarEventos } = require("../middlewares/validacionMiddleware");
 
 // No se requiere autenticación
 router.get("/listar", EventoController.listar);
@@ -14,7 +14,7 @@ router.get(
 // Se requiere ser profesor o director
 router.post(
   "/agregar",
-  validarEventos,
+  validarAgregarEventos,
   verificarTokenYRol(["Profesor", "Director"]),
   EventoController.agregar
 );

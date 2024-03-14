@@ -33,7 +33,7 @@ SET
 --
 -- Estructura de tabla para la tabla `eventos`
 --
-CREATE DATABASE bdea21;
+CREATE DATABASE IF NOT EXISTS bdea21;
 
 USE bdea21;
 
